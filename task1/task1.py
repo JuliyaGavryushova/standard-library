@@ -23,34 +23,16 @@ FileInfo = namedtuple('FileInfo', ['name', 'extension', 'dir_flag', 'parent_dir'
 
 def get_file_info(dir_path):
 
-    files_info = [(dirs, folders, files) for dirs, folders, files in os.walk(dir_path)]
-    result = []
-    for i in range(0, len(files_info)):
-        parent_dir = files_info[i][0]
-        dir_list = files_info[i][1]
-        file_list = files_info[i][2]
-
-        for el in dir_list:
-            dir_flag = 'Yes'
-            file_name = el
-            file_exten = ''
-            f = FileInfo(file_name, file_exten, dir_flag, parent_dir)
-            result.append(f)
-            logger.info(
-                f'{file_name}, {file_exten}, {dir_flag}, {parent_dir}')
-
-        for item in file_list:
-            dir_flag = 'No'
-            try:
-                file_name, file_exten = item.split('.')
-            except Exception:
-                *file_name, file_exten = item.split('.')
-
-            f = FileInfo(file_name, file_exten, dir_flag, parent_dir)
-            result.append(f)
-            logger.info(
-                f'{file_name}, {file_exten}, {dir_flag}, {parent_dir}')
-    return result
+    files_info = []
+    for root, dirs, files in os.walk(dir_path):
+        for item in dirs:
+            files_info.append(FileInfo(name=item, extension=None, dir_flag=True, parent_dir=root))
+            logger.info(f'{item}, {None}, {True}, {root}')
+        for item in files:
+            name, ext = os.path.splitext(item)
+            files_info.append(FileInfo(name=name, extension=ext, dir_flag=False, parent_dir=root))
+            logger.info(f'{name}, {ext}, {False}, {root}')
+    return files_info
 
 
-# print(get_file_info('C:\\Users\\User\\Desktop'))
+print(get_file_info('C:\\Users\\User\\Desktop\\Участок'))
